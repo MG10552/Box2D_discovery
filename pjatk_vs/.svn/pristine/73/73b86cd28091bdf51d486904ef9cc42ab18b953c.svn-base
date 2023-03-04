@@ -1,0 +1,138 @@
+#include <Windows.h>
+#include <gl/GL.h>
+#include "box2d/Box2D.h"
+#include "misc.h"
+#include "game.h"
+
+const float b2s = 10.0f;
+const float s2b = 1.0f/b2s;
+
+void  Game::create(int win_size_x, int win_size_y)
+{
+  win_dx = (float)win_size_x;
+  win_dy = (float)win_size_y;
+  scroll_x = 0;
+  scroll_y = 0;
+
+  tex_0 = loadTexture("res/sample_tex.png");
+
+  //mesh_rect.createRect(128, 128, rgba2i(255, 255, 255, 255), &tex_0, 128, 0);
+  //mesh_rect.x = -100;
+  //mesh_rect.y = 100;
+
+  //mesh_wheel.createWheel(64, rgba2i(255, 255, 255, 255), 10, &tex_0, 64, 64);
+  //mesh_wheel.x = 120;
+  //mesh_wheel.y = 50;
+
+  b2world = new b2World(b2Vec2(0, -9.81f*10));
+
+  b2BodyDef bd_floor;
+  bd_floor.position.Set(0, -10 * s2b );
+  bd_floor.angle = 5 * deg2rad;
+  floor = b2world->CreateBody(&bd_floor);
+  b2ChainShape floor_shape;
+  b2Vec2 verts[] = { s2b * b2Vec2(-380, 280), s2b * b2Vec2(-380, -280), s2b * b2Vec2(380, -280), s2b * b2Vec2(380, 280) };
+  floor_shape.CreateLoop(verts,sizeof(verts)/sizeof(verts[0]));
+  floor->CreateFixture(&floor_shape, 1.0f);
+
+  b2BodyDef bd_circle;
+  bd_circle.type = b2_dynamicBody;
+  bd_circle.position.Set(0, 10 * s2b);
+  circle = b2world->CreateBody(&bd_circle);
+  b2CircleShape circle_shape;
+  circle_shape.m_radius = 40.0f * s2b;
+  circle->CreateFixture(&circle_shape, 1.0f);
+  //circle->SetGravityScale(1.0f);
+
+  //mesh_wheel.sx = b2s*2*circle_shape.m_radius/mesh_wheel.size_dx;
+  //mesh_wheel.sy = b2s*2*circle_shape.m_radius/mesh_wheel.size_dy;
+
+
+  b2BodyDef bd_octagon;
+  bd_octagon.type = b2_staticBody;
+  bd_octagon.position = s2b * b2Vec2(100, 20);
+  //bd_octagon.angularVelocity = deg2rad * -60;
+  octagon = b2world->CreateBody(&bd_octagon);
+  b2PolygonShape octagon_shape;
+  octagon_shape.SetAsBox(10 * s2b, 20 * s2b);
+  b2FixtureDef fd_octagon;
+  fd_octagon.shape = &octagon_shape;
+  fd_octagon.restitution = 0.25f;
+  fd_octagon.density = 1.0f;
+  octagon->CreateFixture(&fd_octagon);
+
+  //b2DistanceJointDef djd;
+  //djd.Initialize(octagon, circle, octagon->GetPosition(), circle->GetPosition());
+  //djd.collideConnected = true;
+  //djd.frequencyHz = 1.0f;
+  //djd.dampingRatio = 0.125f;
+  //b2world->CreateJoint(&djd);
+
+  //b2RevoluteJointDef rjd;
+  //rjd.Initialize(circle, octagon, octagon->GetPosition());
+  //rjd.enableMotor = true;
+  //rjd.motorSpeed = 10;
+  //rjd.maxMotorTorque = 2500;
+  //rjd.enableLimit = true;
+  //rjd.lowerAngle = -50 * deg2rad;
+  //rjd.upperAngle = 50 * deg2rad;
+  //b2RevoluteJoint* rj = (b2RevoluteJoint*) b2world->CreateJoint(&rjd);
+  //rj->SetMotorSpeed(10000);
+}
+void  Game::process(const Input& in)
+{
+
+  b2world->Step(1.0f/60, 5, 5);
+
+  if(in.kb['A'] == Input::Hold)
+    scroll_x -= 1.0f;
+  if(in.kb['D'] == Input::Hold)
+    scroll_x += 1.0f;
+  if(in.kb['W'] == Input::Hold)
+    scroll_y += 1.0f;
+  if(in.kb['S'] == Input::Hold)
+    scroll_y -= 1.0f;
+
+  render();
+}
+
+void  Game::destroy()
+{
+  glDeleteTextures(1, &tex_0.tex_id);
+  delete b2world;
+  b2world = NULL;
+}
+void  Game::render()
+{
+//gl global settings
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glLineWidth(1.0f);
+//camera
+  glViewport(0, 0, (int)win_dx, (int)win_dy);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glFrustum(-1.0f, 1.0f, -win_dy/win_dx, win_dy/win_dx, 1.0f, 100.0f);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glScalef(2.0f/win_dx, 2.0f/win_dx, 1.0f);
+  glTranslatef(scroll_x, scroll_y, -1.0f);
+
+//clear screen
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+//render
+  glPushMatrix();
+
+  debug_draw(b2world, b2s);
+
+  //mesh_rect.render();
+  //mesh_wheel.render();
+
+
+
+  glPopMatrix();
+}
+

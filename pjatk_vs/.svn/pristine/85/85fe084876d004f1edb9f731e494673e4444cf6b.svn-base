@@ -1,0 +1,55 @@
+#pragma once
+
+class  b2World;
+class  b2Body;
+struct b2Vec2;
+
+struct Object
+{
+  b2Body*   body;
+  Mesh*     mesh;
+  Object() : body(NULL), mesh(NULL)
+  {
+
+  }
+};
+typedef std::vector<Object>  stdv_objs;
+typedef std::vector<Texture> stdv_texs;
+
+class Game
+{
+  float     win_dx;
+  float     win_dy;
+  float     scroll_x, scroll_y;
+
+  //swiat
+  b2World*     b2world;
+  
+  //nasz statek
+  Object      starship;
+  //pole gry
+  Object      boundary;
+  //lista asteroidów
+  stdv_objs   vasteroids;
+  //lista cz¹steczek
+  stdv_objs   vparticles;
+  //list pocisków
+  stdv_objs   vbullets;
+  //textura
+  Texture      tex_0;
+
+
+  //dx,dy - szerokoœæ i wysokoœæ ograniczenia
+  void      createGameBoundary(float dx, float dy);
+  void      createStarship();
+  //pozycja pocz¹tkowa pocisku, kierunek strza³u
+  void      createBullet(const b2Vec2& bullet_pos, const b2Vec2& bullet_dir);
+
+  void      render();
+
+public:
+  Game() : win_dx(0), win_dy(0){}
+  void      create(int win_size_x, int win_size_y);
+  void      destroy();
+  void      process(const Input& in);
+};
