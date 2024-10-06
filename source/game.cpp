@@ -52,6 +52,7 @@ void  Game::createGameBoundary(float dx, float dy) {
     boundary.body -> CreateFixture(&fd);
     boundary.body -> SetUserData(&boundary);
 }
+
 void  Game::createStarship() {
     // Dynamiczny obiekt
     b2BodyDef bd;
@@ -86,6 +87,7 @@ void  Game::createStarship() {
     // I obrotowego dla statku
     starship.body -> SetAngularDamping(3.0f);
 }
+
 void Game::createBullet(const b2Vec2& vpos, const b2Vec2& vdir) {
     Object *obj = new Object();
     b2BodyDef bd;
@@ -199,7 +201,6 @@ void  Game::create(int win_size_x, int win_size_y) {
     scroll_x = 0;
     scroll_y = 0;
     tex_0 = loadTexture("assets/sample_tex.png");
-
 
     // Tworzenie œwiata - bez grawitacji
     b2world = new b2World(b2Vec2(0, 0));

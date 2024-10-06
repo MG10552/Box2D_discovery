@@ -21,7 +21,7 @@ class Game {
         Object(): body(NULL), mesh(NULL), lifetime(0) { }
     };
 
-    typedef std::vector<Object*>  stdv_objs;
+    typedef std::vector<Object*> stdv_objs;
     // Our ship
     Object starship;
     // Game field

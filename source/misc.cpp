@@ -130,7 +130,7 @@ void  Mesh::createRect(int size_x, int size_y, u32 rgba, const Texture* tex, int
     color = rgba;
 
     if (tex)
-        tex_id = tex->tex_id;
+        tex_id = tex -> tex_id;
     else
         tex_id = 0;
     
@@ -163,7 +163,7 @@ void  Mesh::createWheel(int rad, u32 rgba, int tris_cnt, const Texture* tex, int
     size_dy = (float)rad * 2;
     
     if (tex)
-        tex_id = tex->tex_id;
+        tex_id = tex -> tex_id;
     else
         tex_id = 0;
     
@@ -205,15 +205,11 @@ void  Mesh::createWheel(int rad, u32 rgba, int tris_cnt, const Texture* tex, int
 
 void  Mesh::render() {
     glPushMatrix();
-
     glBindTexture(GL_TEXTURE_2D, tex_id);
-
     glTranslatef(x, y, 0);
     glRotatef(roto, 0, 0, 1.0f);
     glScalef(sx, sy, 1.0f);
-
     glColor4f(getRf(color), getGf(color), getBf(color), getAf(color));
-
     glBegin(GL_TRIANGLES);
 
     for (size_t q = 0; q < vvtxs.size(); ++q) {
@@ -244,7 +240,7 @@ void  debugDraw(const b2World* world, float scale) {
     glPushMatrix();
     glScalef(scale, scale, 1.0f);
     
-    for (const b2Body* body = world->GetBodyList(); body != NULL; body = body->GetNext()) {
+    for (const b2Body* body = world -> GetBodyList(); body != NULL; body = body -> GetNext()) {
         if (body -> GetType() == b2_dynamicBody)
             body_color = dynamic_color;
         

@@ -41,7 +41,6 @@ inline float getAf(u32 rgba) {
     return getA(rgba) / 255.0f;
 }
 
-
 const float rad2deg = 180.0f / 3.141592f;
 const float deg2rad = 3.141592f / 180.0f;
 
@@ -90,7 +89,6 @@ struct Texture {
 };
 
 Texture loadTexture(const char *filename);
-
 
 struct  VtxPT {
     float x, y;
